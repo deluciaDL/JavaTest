@@ -1,4 +1,4 @@
-package com.example.hexagonal.unit;
+package com.example.hexagonal.infrastructure.controller;
 
 import com.example.hexagonal.application.dto.PriceResponse;
 import com.example.hexagonal.application.service.PriceService;
@@ -11,7 +11,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

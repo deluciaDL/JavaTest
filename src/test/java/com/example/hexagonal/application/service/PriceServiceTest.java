@@ -1,4 +1,4 @@
-package com.example.hexagonal.unit;
+package com.example.hexagonal.application.service;
 
 import com.example.hexagonal.application.dto.PriceResponse;
 import com.example.hexagonal.application.service.PriceService;

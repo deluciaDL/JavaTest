@@ -10,3 +10,8 @@ CREATE TABLE PRICES (
                         PRICE DOUBLE PRECISION NOT NULL,
                         CURRENCY VARCHAR(10)
 );
+
+CREATE SEQUENCE id_sequence
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1;

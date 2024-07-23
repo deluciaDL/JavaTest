@@ -12,7 +12,7 @@ public interface PriceRepository {
 
     Optional<Price> find(LocalDateTime date, long brandId, long productId);
 
-    Price save(Price price);
+    void save(Price price);
 
     List<Price> findAll();
 
