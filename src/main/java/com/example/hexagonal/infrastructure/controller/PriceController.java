@@ -44,6 +44,6 @@ public class PriceController {
             Long productId,
             @Parameter(description = "Brand identifier associated to the price", example = "1") @RequestParam("brandId")
             Long brandId) {
-        return ResponseEntity.ok(priceService.getPrice(date, brandId, productId));
+        return ResponseEntity.ok(priceService.findPrice(date, brandId, productId));
     }
 }

@@ -18,7 +18,7 @@ public class PriceService {
         this.priceRepository = priceRepository;
     }
 
-    public PriceResponse getPrice(LocalDateTime date, Long brandId, Long productId) {
+    public PriceResponse findPrice(LocalDateTime date, Long brandId, Long productId) {
         Optional<Price> price = priceRepository.find(date, brandId, productId);
         return price.map(PriceDtoMapper::toPriceResponse).orElseThrow(() -> new RuntimeException("No item found"));
     }

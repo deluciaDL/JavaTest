@@ -1,5 +1,9 @@
 package com.example.hexagonal.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -7,7 +11,9 @@ public class PriceResponse {
 
     private Long productId;
     private Long brandId;
+    @JsonFormat(pattern = "yyyy-MM-dd:HH.mm.ss")
     private LocalDateTime dateFrom;
+    @JsonFormat(pattern = "yyyy-MM-dd:HH.mm.ss")
     private LocalDateTime dateTo;
     private Long feeId;
     private BigDecimal amount;
@@ -67,5 +73,34 @@ public class PriceResponse {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        PriceResponse that = (PriceResponse) o;
+
+        return new EqualsBuilder().append(productId, that.productId).append(brandId, that.brandId)
+                .append(dateFrom, that.dateFrom).append(dateTo, that.dateTo).append(feeId, that.feeId)
+                .append(amount, that.amount).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(productId).append(brandId).append(dateFrom).append(dateTo)
+                .append(feeId).append(amount).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "PriceResponse{" + "productId=" + productId + ", brandId=" + brandId + ", dateFrom=" + dateFrom
+                + ", dateTo=" + dateTo + ", feeId=" + feeId + ", amount=" + amount + '}';
     }
 }
