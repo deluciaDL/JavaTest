@@ -31,13 +31,13 @@ public class JdbcPriceRepositoryImpl implements PriceRepository {
 
     @Override
     public Optional<Price> find(LocalDateTime date, long brandId, long productId) {
-        JdbcPrice jdbcPrice =
-                jdbcTemplate.queryForObject(
+        List<JdbcPrice> jdbcPrice =
+                jdbcTemplate.query(
                         "SELECT * FROM prices WHERE product_id = ? AND brand_id = ? AND ? BETWEEN start_date AND end_date "
                                 + "ORDER BY priority DESC LIMIT 1",
                         new PriceRowMapper(), new Object[] { productId, brandId, date });
 
-        return Optional.ofNullable(jdbcPrice).map(jdbcPriceMapper::fromEntity);
+        return jdbcPrice.stream().findFirst().map(jdbcPriceMapper::fromEntity);
 
     }
 
