@@ -114,4 +114,11 @@ public class Price {
     public void setCurrency(Currency currency) {
         this.currency = currency;
     }
+
+    @Override
+    public String toString() {
+        return "Price{" + "id=" + id + ", brandId=" + brandId + ", dateFrom=" + dateFrom + ", dateTo=" + dateTo
+                + ", feeId=" + feeId + ", productId=" + productId + ", priority=" + priority + ", amount=" + amount
+                + ", currency=" + currency + '}';
+    }
 }

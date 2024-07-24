@@ -1,5 +1,7 @@
 package com.example.hexagonal.domain.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,9 +14,14 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     // Handling error when no price is found
     @ExceptionHandler(PriceNotFoundException.class)
     public ResponseEntity<Object> handlePriceNotFoundException(PriceNotFoundException ex) {
+
+        logger.error("Price not found exception: ", ex);
+
         Map<String, Object> body = new HashMap<>();
         body.put("message", ex.getMessage());
         body.put("timestamp", System.currentTimeMillis());
@@ -27,6 +34,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
 
+        logger.error("Method argument type mismatch: ", ex);
+
         Map<String, Object> body = new HashMap<>();
         body.put("message", "Invalid parameter type: " + ex.getName());
         body.put("timestamp", System.currentTimeMillis());
@@ -38,6 +47,9 @@ public class GlobalExceptionHandler {
     // Other exception handlers...
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericException(Exception ex) {
+
+        logger.error("An unexpected error occurred: ", ex);
+
         Map<String, Object> body = new HashMap<>();
         body.put("message", "An unexpected error occurred");
         body.put("details", ex.getMessage());

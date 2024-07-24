@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +27,8 @@ import java.time.LocalDateTime;
 public class PriceController {
 
     private final PriceService priceService;
+
+    private static final Logger logger = LoggerFactory.getLogger(PriceController.class);
 
     public PriceController(PriceService priceService) {
         this.priceService = priceService;
@@ -44,6 +48,13 @@ public class PriceController {
             Long productId,
             @Parameter(description = "Brand identifier associated to the price", example = "1") @RequestParam("brandId")
             Long brandId) {
-        return ResponseEntity.ok(priceService.findPrice(date, brandId, productId));
+
+        logger.info("Received request to get price for productId: {}, brandId: {}, date: {}", productId, brandId, date);
+
+        PriceResponse priceResponse = priceService.findPrice(date, brandId, productId);
+
+        logger.info("Returning price response: {}", priceResponse);
+
+        return ResponseEntity.ok(priceResponse);
     }
 }
