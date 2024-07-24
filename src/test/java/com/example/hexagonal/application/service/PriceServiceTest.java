@@ -35,7 +35,7 @@ public class PriceServiceTest {
     }
 
     @Test
-    void testPriceServiceFindPrice() {
+    void testFindPrice() {
 
         // Given
         Long productId = 30L;
@@ -61,12 +61,14 @@ public class PriceServiceTest {
     }
 
     @Test
-    void testPriceServiceFindPriceNotFound() {
+    void testFindPriceNotFound() {
 
         // Given
         Long productId = 30L;
         Long brandId = 1L;
         LocalDateTime dateParam = LocalDateTime.now();
+
+        String expectedErrorMessage = "No price found";
 
         when(priceRepository.find(dateParam, brandId, productId)).thenReturn(Optional.empty());
 
@@ -75,7 +77,7 @@ public class PriceServiceTest {
                 assertThrows(RuntimeException.class, () -> priceService.findPrice(dateParam, brandId, productId));
 
         // Then
-        assertEquals("No item found", thrownException.getMessage());
+        assertEquals(expectedErrorMessage, thrownException.getMessage());
         verify(priceRepository, times(1)).find(dateParam, brandId, productId);
     }
 }

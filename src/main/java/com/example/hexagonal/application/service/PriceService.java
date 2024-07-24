@@ -2,6 +2,7 @@ package com.example.hexagonal.application.service;
 
 import com.example.hexagonal.application.dto.PriceResponse;
 import com.example.hexagonal.application.mapper.PriceDtoMapper;
+import com.example.hexagonal.domain.exception.PriceNotFoundException;
 import com.example.hexagonal.domain.model.Price;
 import com.example.hexagonal.domain.repository.PriceRepository;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,6 @@ public class PriceService {
 
     public PriceResponse findPrice(LocalDateTime date, Long brandId, Long productId) {
         Optional<Price> price = priceRepository.find(date, brandId, productId);
-        return price.map(PriceDtoMapper::toPriceResponse).orElseThrow(() -> new RuntimeException("No item found"));
+        return price.map(PriceDtoMapper::toPriceResponse).orElseThrow(() -> new PriceNotFoundException("No price found"));
     }
 }

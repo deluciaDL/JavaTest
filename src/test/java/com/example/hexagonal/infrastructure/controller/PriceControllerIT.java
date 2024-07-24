@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -18,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,6 +38,9 @@ public class PriceControllerIT {
 
     @BeforeEach
     void setUp() {
+        // Clean the DB first
+        priceRepository.deleteAll();
+
         // Setup test data
         Long productId = 30L;
         Long brandId = 1L;
@@ -43,12 +49,12 @@ public class PriceControllerIT {
         Long feeId = 3L;
         BigDecimal amount = BigDecimal.valueOf(10.50);
 
-        Price price = new Price(1L, brandId, dateFrom, dateTo, feeId, productId, 0, amount, Currency.EUR);
+        Price price = new Price(brandId, dateFrom, dateTo, feeId, productId, 0, amount, Currency.EUR);
         priceRepository.save(price);
     }
 
     @Test
-    void testPriceControllerGetPriceIT() throws Exception {
+    void testGetPriceIT() throws Exception {
         // Given
         Long productId = 30L;
         Long brandId = 1L;
@@ -70,5 +76,41 @@ public class PriceControllerIT {
                 .andExpect(jsonPath("$.dateTo", is(expectedDateTo.format(dateTimeFormatter))))
                 .andExpect(jsonPath("$.feeId", equalTo(expectedFeeId.intValue())))
                 .andExpect(jsonPath("$.amount", equalTo(expectedAmount.doubleValue())));
+    }
+
+    @Test
+    void testGetPriceNotFoundIT() throws Exception {
+        // Given
+        Long productId = 99L;
+        Long brandId = 1L;
+        LocalDateTime dateParam = LocalDateTime.of(2020, Month.APRIL, 10, 16, 0, 0);
+
+        String expectedErrorMessage = "No price found";
+
+        // When && Then
+        mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
+                .param("date", dateParam.toString()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(expectedErrorMessage))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()));
+    }
+
+    @Test
+    void testGetPriceWrongParamIT() throws Exception {
+        // Given
+        Long productId = 99L;
+        String brandId = "zara";
+        LocalDateTime dateParam = LocalDateTime.of(2020, Month.APRIL, 10, 16, 0, 0);
+
+        String expectedErrorMessage = "Invalid parameter type: brandId";
+
+        // When && Then
+        mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
+                        .param("date", dateParam.toString()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(expectedErrorMessage))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()));
     }
 }

@@ -42,7 +42,7 @@ public class PriceControllerTest {
     }
 
     @Test
-    void testPriceControllerGetPrice() throws Exception {
+    void testGetPrice() throws Exception {
 
         // Given
         Long productId = 30L;
@@ -68,4 +68,5 @@ public class PriceControllerTest {
                 .andExpect(jsonPath("$.feeId", equalTo(priceResponse.getFeeId().intValue())))
                 .andExpect(jsonPath("$.amount", equalTo(priceResponse.getAmount().doubleValue())));
     }
+
 }

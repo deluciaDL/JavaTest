@@ -31,6 +31,18 @@ public class Price {
         this.currency = currency;
     }
 
+    public Price(Long brandId, LocalDateTime dateFrom, LocalDateTime dateTo, Long feeId, Long productId, int priority,
+            BigDecimal amount, Currency currency) {
+        this.brandId = brandId;
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+        this.feeId = feeId;
+        this.productId = productId;
+        this.priority = priority;
+        this.amount = amount;
+        this.currency = currency;
+    }
+
     public Long getId() {
         return id;
     }

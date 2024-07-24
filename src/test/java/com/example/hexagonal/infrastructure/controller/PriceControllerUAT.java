@@ -3,6 +3,7 @@ package com.example.hexagonal.infrastructure.controller;
 import com.example.hexagonal.JavaTestApplication;
 import com.example.hexagonal.domain.model.Currency;
 import com.example.hexagonal.domain.model.Price;
+import com.example.hexagonal.domain.model.PriceResponseTestEntity;
 import com.example.hexagonal.domain.repository.PriceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = JavaTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PriceControllerAcceptanceTest {
+public class PriceControllerUAT {
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -32,6 +33,9 @@ public class PriceControllerAcceptanceTest {
 
     @BeforeEach
     public void setup() {
+        // Clean the DB first
+        priceRepository.deleteAll();
+
         // Setup test data
         Long productId = 30L;
         Long brandId = 1L;
@@ -40,7 +44,7 @@ public class PriceControllerAcceptanceTest {
         Long feeId = 3L;
         BigDecimal amount = BigDecimal.valueOf(10.50);
 
-        Price price = new Price(1L, brandId, dateFrom, dateTo, feeId, productId, 0, amount, Currency.EUR);
+        Price price = new Price(brandId, dateFrom, dateTo, feeId, productId, 0, amount, Currency.EUR);
 
         priceRepository.save(price);
     }
@@ -60,15 +64,15 @@ public class PriceControllerAcceptanceTest {
         BigDecimal expectedAmount = BigDecimal.valueOf(10.50);
 
         // When
-        ResponseEntity<PriceResponse> responseEntity = restTemplate.getForEntity(
+        ResponseEntity<PriceResponseTestEntity> responseEntity = restTemplate.getForEntity(
                 "/prices?productId={productId}&brandId={brandId}&date={date}",
-                PriceResponse.class,
+                PriceResponseTestEntity.class,
                 productId, brandId, date
         );
 
         // Then
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        PriceResponse response = responseEntity.getBody();
+        PriceResponseTestEntity response = responseEntity.getBody();
         assertThat(response).isNotNull();
         assertThat(response.getProductId()).isEqualTo(expectedProductId);
         assertThat(response.getBrandId()).isEqualTo(expectedBrandId);
@@ -79,7 +83,7 @@ public class PriceControllerAcceptanceTest {
     }
 
     @Test
-    public void getPrice_whenPriceNotFound_returnsNotFound() {
+    public void testGetPriceNotFoundUAT() {
         // Given
         Long productId = 99L;
         Long brandId = 1L;
@@ -96,62 +100,21 @@ public class PriceControllerAcceptanceTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    public static class PriceResponse {
-        private Long productId;
-        private Long brandId;
-        private BigDecimal amount;
-        private String dateFrom;
-        private String dateTo;
-        private Long feeId;
+    @Test
+    public void testGetPriceWrongParamUAT() {
+        // Given
+        Long productId = 99L;
+        String brandId = "zara";
+        LocalDateTime date = LocalDateTime.of(2021, Month.APRIL,10,16,0,0);
 
-        // Getters and setters...
+        // When
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+                "/prices?productId={productId}&brandId={brandId}&date={date}",
+                String.class,
+                productId, brandId, date
+        );
 
-        public Long getProductId() {
-            return productId;
-        }
-
-        public void setProductId(Long productId) {
-            this.productId = productId;
-        }
-
-        public Long getBrandId() {
-            return brandId;
-        }
-
-        public void setBrandId(Long brandId) {
-            this.brandId = brandId;
-        }
-
-        public BigDecimal getAmount() {
-            return amount;
-        }
-
-        public void setAmount(BigDecimal amount) {
-            this.amount = amount;
-        }
-
-        public String getDateFrom() {
-            return dateFrom;
-        }
-
-        public void setDateFrom(String dateFrom) {
-            this.dateFrom = dateFrom;
-        }
-
-        public String getDateTo() {
-            return dateTo;
-        }
-
-        public void setDateTo(String dateTo) {
-            this.dateTo = dateTo;
-        }
-
-        public Long getFeeId() {
-            return feeId;
-        }
-
-        public void setFeeId(Long feeId) {
-            this.feeId = feeId;
-        }
+        // Then
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }

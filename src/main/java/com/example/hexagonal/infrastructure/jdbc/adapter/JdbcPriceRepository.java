@@ -14,19 +14,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class JdbcPriceRepositoryImpl implements PriceRepository {
+public class JdbcPriceRepository implements PriceRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final JdbcPriceMapper jdbcPriceMapper;
 
-    public JdbcPriceRepositoryImpl(JdbcTemplate jdbcTemplate, JdbcPriceMapper jdbcPriceMapper) {
+    public JdbcPriceRepository(JdbcTemplate jdbcTemplate, JdbcPriceMapper jdbcPriceMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcPriceMapper = jdbcPriceMapper;
-    }
-
-    @Override
-    public Optional<Price> findById(long id) {
-        return Optional.empty();
     }
 
     @Override
@@ -57,7 +52,8 @@ public class JdbcPriceRepositoryImpl implements PriceRepository {
     }
 
     @Override
-    public void deleteById(long id) {
-
+    public void deleteAll() {
+        String sql = "DELETE FROM prices";
+        jdbcTemplate.update(sql);
     }
 }

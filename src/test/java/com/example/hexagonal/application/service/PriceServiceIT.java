@@ -2,6 +2,7 @@ package com.example.hexagonal.application.service;
 
 import com.example.hexagonal.application.dto.PriceResponse;
 import com.example.hexagonal.application.service.PriceService;
+import com.example.hexagonal.domain.exception.PriceNotFoundException;
 import com.example.hexagonal.domain.model.Currency;
 import com.example.hexagonal.domain.model.Price;
 import com.example.hexagonal.domain.repository.PriceRepository;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @SpringBootTest
@@ -29,6 +31,9 @@ public class PriceServiceIT {
 
     @BeforeEach
     void setUp() {
+        // Clean the DB first
+        priceRepository.deleteAll();
+
         // Setup test data
         Long productId = 30L;
         Long brandId = 1L;
@@ -37,12 +42,12 @@ public class PriceServiceIT {
         Long feeId = 3L;
         BigDecimal amount = BigDecimal.valueOf(10.50);
 
-        Price price = new Price(1L, brandId, dateFrom, dateTo, feeId, productId, 0, amount, Currency.EUR);
+        Price price = new Price(brandId, dateFrom, dateTo, feeId, productId, 0, amount, Currency.EUR);
         priceRepository.save(price);
     }
 
     @Test
-    void testPriceServiceFindPriceIT() {
+    void testFindPriceIT() {
 
         // Given
         Long productId = 30L;
@@ -66,5 +71,19 @@ public class PriceServiceIT {
         assertEquals(expectedDateTo, response.getDateTo());
         assertEquals(expectedFeeId, response.getFeeId());
         assertEquals(expectedAmount, response.getAmount());
+    }
+
+    @Test
+    void testFindPricePriceNotFoundExceptionIT() {
+
+        // Given
+        Long productId = 30L;
+        Long brandId = 12L;
+        LocalDateTime date = LocalDateTime.of(2020, Month.APRIL, 10, 16, 0, 0);
+
+        // When && Then
+        assertThrows(PriceNotFoundException.class, () -> {
+            priceService.findPrice(date, brandId, productId);
+        });
     }
 }

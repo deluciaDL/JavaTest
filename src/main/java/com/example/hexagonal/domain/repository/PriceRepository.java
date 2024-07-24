@@ -8,13 +8,11 @@ import java.util.Optional;
 
 public interface PriceRepository {
 
-    Optional<Price> findById(long id);
-
     Optional<Price> find(LocalDateTime date, long brandId, long productId);
 
     void save(Price price);
 
     List<Price> findAll();
 
-    void deleteById(long id);
+    void deleteAll();
 }
