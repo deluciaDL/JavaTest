@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = JavaTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PriceControllerUAT {
+class PriceControllerUAT {
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -50,7 +50,7 @@ public class PriceControllerUAT {
     }
 
     @Test
-    public void testGetPriceUAT() {
+    void testGetPriceUAT() {
         // Given
         Long productId = 30L;
         Long brandId = 1L;
@@ -83,7 +83,7 @@ public class PriceControllerUAT {
     }
 
     @Test
-    public void testGetPriceNotFoundUAT() {
+    void testGetPriceNotFoundUAT() {
         // Given
         Long productId = 99L;
         Long brandId = 1L;
@@ -101,7 +101,7 @@ public class PriceControllerUAT {
     }
 
     @Test
-    public void testGetPriceWrongParamUAT() {
+    void testGetPriceWrongParamUAT() {
         // Given
         Long productId = 99L;
         String brandId = "zara";

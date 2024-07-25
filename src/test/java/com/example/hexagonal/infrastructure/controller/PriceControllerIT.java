@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PriceControllerIT {
+class PriceControllerIT {
 
     @Autowired
     private PriceRepository priceRepository;
@@ -42,30 +42,166 @@ public class PriceControllerIT {
         priceRepository.deleteAll();
 
         // Setup test data
-        Long productId = 30L;
+        Long productId = 35455L;
         Long brandId = 1L;
-        LocalDateTime dateFrom = LocalDateTime.of(2020, Month.APRIL,10,16,0,0).minusDays(1);
-        LocalDateTime dateTo = LocalDateTime.of(2020, Month.APRIL,10,16,0,0).plusDays(1);
-        Long feeId = 3L;
-        BigDecimal amount = BigDecimal.valueOf(10.50);
+        LocalDateTime dateFrom = LocalDateTime.of(2020, Month.JUNE,14,0,0,0);
+        LocalDateTime dateTo = LocalDateTime.of(2020, Month.DECEMBER,31,23,59,59);
+        Long feeId = 1L;
+        BigDecimal amount = BigDecimal.valueOf(35.50);
 
-        Price price = new Price(brandId, dateFrom, dateTo, feeId, productId, 0, amount, Currency.EUR);
-        priceRepository.save(price);
+        Price price1 = new Price(brandId, dateFrom, dateTo, feeId, productId, 0, amount, Currency.EUR);
+
+        productId = 35455L;
+        brandId = 1L;
+        dateFrom = LocalDateTime.of(2020, Month.JUNE,14,15,0,0);
+        dateTo = LocalDateTime.of(2020, Month.JUNE,14,18,30,0);
+        feeId = 2L;
+        amount = BigDecimal.valueOf(25.45);
+
+        Price price2 = new Price(brandId, dateFrom, dateTo, feeId, productId, 1, amount, Currency.EUR);
+
+        productId = 35455L;
+        brandId = 1L;
+        dateFrom = LocalDateTime.of(2020, Month.JUNE,15,0,0,0);
+        dateTo = LocalDateTime.of(2020, Month.JUNE,15,11,0,0);
+        feeId = 3L;
+        amount = BigDecimal.valueOf(30.50);
+
+        Price price3 = new Price(brandId, dateFrom, dateTo, feeId, productId, 1, amount, Currency.EUR);
+
+        productId = 35455L;
+        brandId = 1L;
+        dateFrom = LocalDateTime.of(2020, Month.JUNE,15,16,0,0);
+        dateTo = LocalDateTime.of(2020, Month.DECEMBER,31,23,59,59);
+        feeId = 4L;
+        amount = BigDecimal.valueOf(38.95);
+
+        Price price4 = new Price(brandId, dateFrom, dateTo, feeId, productId, 1, amount, Currency.EUR);
+
+        priceRepository.save(price1);
+        priceRepository.save(price2);
+        priceRepository.save(price3);
+        priceRepository.save(price4);
     }
 
+    // Required test 1
     @Test
-    void testGetPriceIT() throws Exception {
+    void test1GetPriceIT() throws Exception {
         // Given
-        Long productId = 30L;
+        Long productId = 35455L;
         Long brandId = 1L;
-        LocalDateTime dateParam = LocalDateTime.of(2020, Month.APRIL,10,16,0,0);
+        LocalDateTime dateParam = LocalDateTime.of(2020, Month.JUNE,14,10,0,0);
 
-        Long expectedProductId = 30L;
+        Long expectedProductId = 35455L;
         Long expectedBrandId = 1L;
-        LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.APRIL,10,16,0,0).minusDays(1);
-        LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.APRIL,10,16,0,0).plusDays(1);
+        LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.JUNE,14,0,0,0);
+        LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.DECEMBER,31,23,59,59);
+        Long expectedFeeId = 1L;
+        BigDecimal expectedAmount = BigDecimal.valueOf(35.50);
+
+        // When && Then
+        mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
+                        .param("date", dateParam.toString())).andExpect(status().isOk())
+                .andExpect(jsonPath("$.productId", equalTo(expectedProductId.intValue())))
+                .andExpect(jsonPath("$.brandId", equalTo(expectedBrandId.intValue())))
+                .andExpect(jsonPath("$.dateFrom", is(expectedDateFrom.format(dateTimeFormatter))))
+                .andExpect(jsonPath("$.dateTo", is(expectedDateTo.format(dateTimeFormatter))))
+                .andExpect(jsonPath("$.feeId", equalTo(expectedFeeId.intValue())))
+                .andExpect(jsonPath("$.amount", equalTo(expectedAmount.doubleValue())));
+    }
+
+    // Required test 2
+    @Test
+    void test2GetPriceIT() throws Exception {
+        // Given
+        Long productId = 35455L;
+        Long brandId = 1L;
+        LocalDateTime dateParam = LocalDateTime.of(2020, Month.JUNE,14,16,0,0);
+
+        Long expectedProductId = 35455L;
+        Long expectedBrandId = 1L;
+        LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.JUNE,14,15,0,0);
+        LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.JUNE,14,18,30,0);
+        Long expectedFeeId = 2L;
+        BigDecimal expectedAmount = BigDecimal.valueOf(25.45);
+
+        // When && Then
+        mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
+                        .param("date", dateParam.toString())).andExpect(status().isOk())
+                .andExpect(jsonPath("$.productId", equalTo(expectedProductId.intValue())))
+                .andExpect(jsonPath("$.brandId", equalTo(expectedBrandId.intValue())))
+                .andExpect(jsonPath("$.dateFrom", is(expectedDateFrom.format(dateTimeFormatter))))
+                .andExpect(jsonPath("$.dateTo", is(expectedDateTo.format(dateTimeFormatter))))
+                .andExpect(jsonPath("$.feeId", equalTo(expectedFeeId.intValue())))
+                .andExpect(jsonPath("$.amount", equalTo(expectedAmount.doubleValue())));
+    }
+
+    // Required test 3
+    @Test
+    void test3GetPriceIT() throws Exception {
+        // Given
+        Long productId = 35455L;
+        Long brandId = 1L;
+        LocalDateTime dateParam = LocalDateTime.of(2020, Month.JUNE,14,21,0,0);
+
+        Long expectedProductId = 35455L;
+        Long expectedBrandId = 1L;
+        LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.JUNE,14,0,0,0);
+        LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.DECEMBER,31,23,59,59);
+        Long expectedFeeId = 1L;
+        BigDecimal expectedAmount = BigDecimal.valueOf(35.50);
+
+        // When && Then
+        mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
+                        .param("date", dateParam.toString())).andExpect(status().isOk())
+                .andExpect(jsonPath("$.productId", equalTo(expectedProductId.intValue())))
+                .andExpect(jsonPath("$.brandId", equalTo(expectedBrandId.intValue())))
+                .andExpect(jsonPath("$.dateFrom", is(expectedDateFrom.format(dateTimeFormatter))))
+                .andExpect(jsonPath("$.dateTo", is(expectedDateTo.format(dateTimeFormatter))))
+                .andExpect(jsonPath("$.feeId", equalTo(expectedFeeId.intValue())))
+                .andExpect(jsonPath("$.amount", equalTo(expectedAmount.doubleValue())));
+    }
+
+    // Required test 4
+    @Test
+    void test4GetPriceIT() throws Exception {
+        // Given
+        Long productId = 35455L;
+        Long brandId = 1L;
+        LocalDateTime dateParam = LocalDateTime.of(2020, Month.JUNE,15,10,0,0);
+
+        Long expectedProductId = 35455L;
+        Long expectedBrandId = 1L;
+        LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.JUNE,15,0,0,0);
+        LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.JUNE,15,11,0,0);
         Long expectedFeeId = 3L;
-        BigDecimal expectedAmount = BigDecimal.valueOf(10.50);
+        BigDecimal expectedAmount = BigDecimal.valueOf(30.50);
+
+        // When && Then
+        mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
+                        .param("date", dateParam.toString())).andExpect(status().isOk())
+                .andExpect(jsonPath("$.productId", equalTo(expectedProductId.intValue())))
+                .andExpect(jsonPath("$.brandId", equalTo(expectedBrandId.intValue())))
+                .andExpect(jsonPath("$.dateFrom", is(expectedDateFrom.format(dateTimeFormatter))))
+                .andExpect(jsonPath("$.dateTo", is(expectedDateTo.format(dateTimeFormatter))))
+                .andExpect(jsonPath("$.feeId", equalTo(expectedFeeId.intValue())))
+                .andExpect(jsonPath("$.amount", equalTo(expectedAmount.doubleValue())));
+    }
+
+    // Required test 5
+    @Test
+    void test5GetPriceIT() throws Exception {
+        // Given
+        Long productId = 35455L;
+        Long brandId = 1L;
+        LocalDateTime dateParam = LocalDateTime.of(2020, Month.JUNE,16,21,0,0);
+
+        Long expectedProductId = 35455L;
+        Long expectedBrandId = 1L;
+        LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.JUNE,15,16,0,0);
+        LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.DECEMBER,31,23,59,59);
+        Long expectedFeeId = 4L;
+        BigDecimal expectedAmount = BigDecimal.valueOf(38.95);
 
         // When && Then
         mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
@@ -113,4 +249,6 @@ public class PriceControllerIT {
                 .andExpect(jsonPath("$.timestamp").exists())
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()));
     }
+
+
 }

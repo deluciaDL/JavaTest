@@ -14,18 +14,22 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String BODY_MESSAGE_KEY = "message";
+    private static final String BODY_TIMESTAMP_KEY = "timestamp";
+    private static final String BODY_STATUS_KEY = "status";
+    private static final String BODY_DETAILS_KEY = "details";
 
     // Handling error when no price is found
     @ExceptionHandler(PriceNotFoundException.class)
     public ResponseEntity<Object> handlePriceNotFoundException(PriceNotFoundException ex) {
 
-        logger.error("Price not found exception: ", ex);
+        LOG.error("Price not found exception: ", ex);
 
         Map<String, Object> body = new HashMap<>();
-        body.put("message", ex.getMessage());
-        body.put("timestamp", System.currentTimeMillis());
-        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put(BODY_MESSAGE_KEY, ex.getMessage());
+        body.put(BODY_TIMESTAMP_KEY, System.currentTimeMillis());
+        body.put(BODY_STATUS_KEY, HttpStatus.NOT_FOUND.value());
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
@@ -34,12 +38,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
 
-        logger.error("Method argument type mismatch: ", ex);
+        LOG.error("Method argument type mismatch: ", ex);
 
         Map<String, Object> body = new HashMap<>();
-        body.put("message", "Invalid parameter type: " + ex.getName());
-        body.put("timestamp", System.currentTimeMillis());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put(BODY_MESSAGE_KEY, "Invalid parameter type: " + ex.getName());
+        body.put(BODY_TIMESTAMP_KEY, System.currentTimeMillis());
+        body.put(BODY_STATUS_KEY, HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
@@ -48,13 +52,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericException(Exception ex) {
 
-        logger.error("An unexpected error occurred: ", ex);
+        LOG.error("An unexpected error occurred: ", ex);
 
         Map<String, Object> body = new HashMap<>();
-        body.put("message", "An unexpected error occurred");
-        body.put("details", ex.getMessage());
-        body.put("timestamp", System.currentTimeMillis());
-        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        body.put(BODY_MESSAGE_KEY, "An unexpected error occurred");
+        body.put(BODY_DETAILS_KEY, ex.getMessage());
+        body.put(BODY_TIMESTAMP_KEY, System.currentTimeMillis());
+        body.put(BODY_STATUS_KEY, HttpStatus.INTERNAL_SERVER_ERROR.value());
 
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }

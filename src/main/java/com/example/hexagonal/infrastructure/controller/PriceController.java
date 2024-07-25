@@ -28,7 +28,7 @@ public class PriceController {
 
     private final PriceService priceService;
 
-    private static final Logger logger = LoggerFactory.getLogger(PriceController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PriceController.class);
 
     public PriceController(PriceService priceService) {
         this.priceService = priceService;
@@ -49,11 +49,11 @@ public class PriceController {
             @Parameter(description = "Brand identifier associated to the price", example = "1") @RequestParam("brandId")
             Long brandId) {
 
-        logger.info("Received request to get price for productId: {}, brandId: {}, date: {}", productId, brandId, date);
+        LOG.info("Received request to get price for productId: {}, brandId: {}, date: {}", productId, brandId, date);
 
         PriceResponse priceResponse = priceService.findPrice(date, brandId, productId);
 
-        logger.info("Returning price response: {}", priceResponse);
+        LOG.info("Returning price response: {}", priceResponse);
 
         return ResponseEntity.ok(priceResponse);
     }

@@ -15,7 +15,7 @@ import java.util.Optional;
 @Service
 public class PriceService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PriceService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PriceService.class);
 
     private final PriceRepository priceRepository;
 
@@ -25,11 +25,11 @@ public class PriceService {
 
     public PriceResponse findPrice(LocalDateTime date, Long brandId, Long productId) {
 
-        logger.info("Fetching price for productId: {}, brandId: {}, date: {}", productId, brandId, date);
+        LOG.info("Fetching price for productId: {}, brandId: {}, date: {}", productId, brandId, date);
 
         Optional<Price> price = priceRepository.find(date, brandId, productId);
 
-        logger.debug("Price found: {}", price.orElse(null));
+        LOG.debug("Price found: {}", price.orElse(null));
 
         return price.map(PriceDtoMapper::toPriceResponse).orElseThrow(() -> new PriceNotFoundException("No price found"));
     }

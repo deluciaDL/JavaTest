@@ -1,7 +1,6 @@
 package com.example.hexagonal.application.service;
 
 import com.example.hexagonal.application.dto.PriceResponse;
-import com.example.hexagonal.application.service.PriceService;
 import com.example.hexagonal.domain.exception.PriceNotFoundException;
 import com.example.hexagonal.domain.model.Currency;
 import com.example.hexagonal.domain.model.Price;
@@ -21,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @SpringBootTest
-public class PriceServiceIT {
+class PriceServiceIT {
 
     @Autowired
     private PriceService priceService;

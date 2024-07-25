@@ -6,6 +6,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JdbcPriceMapper {
+
+    private JdbcPriceMapper() {
+    }
+
     // Convert domain model Price to jdbc entity jdbcPrice
     public JdbcPrice toEntity(Price price) {
         JdbcPrice jdbcPrice = new JdbcPrice();

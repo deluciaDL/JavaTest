@@ -1,7 +1,7 @@
 package com.example.hexagonal.application.service;
 
 import com.example.hexagonal.application.dto.PriceResponse;
-import com.example.hexagonal.application.service.PriceService;
+import com.example.hexagonal.domain.exception.PriceNotFoundException;
 import com.example.hexagonal.domain.model.Currency;
 import com.example.hexagonal.domain.model.Price;
 import com.example.hexagonal.domain.repository.PriceRepository;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PriceServiceTest {
+class PriceServiceTest {
 
     @InjectMocks
     private PriceService priceService;
@@ -73,8 +73,8 @@ public class PriceServiceTest {
         when(priceRepository.find(dateParam, brandId, productId)).thenReturn(Optional.empty());
 
         // When
-        RuntimeException thrownException =
-                assertThrows(RuntimeException.class, () -> priceService.findPrice(dateParam, brandId, productId));
+        PriceNotFoundException thrownException =
+                assertThrows(PriceNotFoundException.class, () -> priceService.findPrice(dateParam, brandId, productId));
 
         // Then
         assertEquals(expectedErrorMessage, thrownException.getMessage());

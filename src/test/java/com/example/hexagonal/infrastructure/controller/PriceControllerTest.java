@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.mockito.Mockito.when;
 
-public class PriceControllerTest {
+class PriceControllerTest {
 
     @InjectMocks
     private PriceController priceController;

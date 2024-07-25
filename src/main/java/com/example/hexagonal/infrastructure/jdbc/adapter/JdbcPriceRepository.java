@@ -12,13 +12,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class JdbcPriceRepository implements PriceRepository {
 
-    private static final Logger logger = LoggerFactory.getLogger(JdbcPriceRepository.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcPriceRepository.class);
 
     private final JdbcTemplate jdbcTemplate;
     private final JdbcPriceMapper jdbcPriceMapper;
@@ -31,15 +32,15 @@ public class JdbcPriceRepository implements PriceRepository {
     @Override
     public Optional<Price> find(LocalDateTime date, long brandId, long productId) {
 
-        logger.debug("Executing query to find price for productId: {}, brandId: {}, date: {}", productId, brandId, date);
+        LOG.debug("Executing query to find price for productId: {}, brandId: {}, date: {}", productId, brandId, date);
 
         List<JdbcPrice> jdbcPrice =
                 jdbcTemplate.query(
                         "SELECT * FROM prices WHERE product_id = ? AND brand_id = ? AND ? BETWEEN start_date AND end_date "
                                 + "ORDER BY priority DESC LIMIT 1",
-                        new PriceRowMapper(), new Object[] { productId, brandId, date });
+                        new PriceRowMapper(), productId, brandId, date);
 
-        logger.debug("Price found: {}", jdbcPrice.stream().findFirst().orElse(null));
+        LOG.debug("Price found: {}", jdbcPrice.stream().findFirst().orElse(null));
 
         return jdbcPrice.stream().findFirst().map(jdbcPriceMapper::fromEntity);
 
@@ -48,7 +49,7 @@ public class JdbcPriceRepository implements PriceRepository {
     @Override
     public void save(Price price) {
 
-        logger.debug("Saving price: {}", price);
+        LOG.debug("Saving price: {}", price);
 
         JdbcPrice jdbcPrice = jdbcPriceMapper.toEntity(price);
 
@@ -57,22 +58,22 @@ public class JdbcPriceRepository implements PriceRepository {
                         + "VALUES (nextval('id_sequence'), ?, ?, ?, ?, ?, ?, ?, ?)",
                 new PricePreparedStatementSetter(jdbcPrice));
 
-        logger.debug("Price saved successfully: {}", price);
+        LOG.debug("Price saved successfully: {}", price);
     }
 
     @Override
     public List<Price> findAll() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public void deleteAll() {
 
-        logger.debug("Removing all prices from the database");
+        LOG.debug("Removing all prices from the database");
 
         String sql = "DELETE FROM prices";
         jdbcTemplate.update(sql);
 
-        logger.debug("All prices removed from the database");
+        LOG.debug("All prices removed from the database");
     }
 }
