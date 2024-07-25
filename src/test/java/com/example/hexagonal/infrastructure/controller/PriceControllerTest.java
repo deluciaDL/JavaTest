@@ -1,8 +1,8 @@
 package com.example.hexagonal.infrastructure.controller;
 
+import com.example.hexagonal.application.dto.FindPriceRequest;
 import com.example.hexagonal.application.dto.PriceResponse;
 import com.example.hexagonal.application.service.PriceService;
-import com.example.hexagonal.infrastructure.controller.PriceController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -54,9 +54,10 @@ class PriceControllerTest {
 
         LocalDateTime dateParam = LocalDateTime.now();
 
+        FindPriceRequest request = new FindPriceRequest(dateParam, brandId, productId);
         PriceResponse priceResponse = new PriceResponse(productId, brandId, dateFrom, dateTo, feeId, amount);
 
-        when(priceService.findPrice(dateParam, brandId, productId)).thenReturn(priceResponse);
+        when(priceService.findPrice(request)).thenReturn(priceResponse);
 
         // When && Then
         mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
@@ -68,5 +69,4 @@ class PriceControllerTest {
                 .andExpect(jsonPath("$.feeId", equalTo(priceResponse.getFeeId().intValue())))
                 .andExpect(jsonPath("$.amount", equalTo(priceResponse.getAmount().doubleValue())));
     }
-
 }

@@ -1,5 +1,6 @@
 package com.example.hexagonal.infrastructure.controller;
 
+import com.example.hexagonal.application.dto.FindPriceRequest;
 import com.example.hexagonal.application.dto.PriceResponse;
 import com.example.hexagonal.application.service.PriceService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -51,7 +52,7 @@ public class PriceController {
 
         LOG.info("Received request to get price for productId: {}, brandId: {}, date: {}", productId, brandId, date);
 
-        PriceResponse priceResponse = priceService.findPrice(date, brandId, productId);
+        PriceResponse priceResponse = priceService.findPrice(new FindPriceRequest(date, brandId, productId));
 
         LOG.info("Returning price response: {}", priceResponse);
 

@@ -1,10 +1,12 @@
 package com.example.hexagonal.application.service;
 
+import com.example.hexagonal.application.dto.FindPriceRequest;
 import com.example.hexagonal.application.dto.PriceResponse;
 import com.example.hexagonal.domain.exception.PriceNotFoundException;
 import com.example.hexagonal.domain.model.Currency;
 import com.example.hexagonal.domain.model.Price;
 import com.example.hexagonal.domain.repository.PriceRepository;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,6 +54,7 @@ class PriceServiceIT {
         Long productId = 30L;
         Long brandId = 1L;
         LocalDateTime date = LocalDateTime.of(2020, Month.APRIL,10,16,0,0);
+        FindPriceRequest request = new FindPriceRequest(date, brandId, productId);
 
         Long expectedProductId = 30L;
         Long expectedBrandId = 1L;
@@ -61,7 +64,7 @@ class PriceServiceIT {
         BigDecimal expectedAmount = BigDecimal.valueOf(10.50);
 
         // When
-        PriceResponse response = priceService.findPrice(date, brandId, productId);
+        PriceResponse response = priceService.findPrice(request);
 
         // Then
         assertEquals(expectedProductId, response.getProductId());
@@ -73,16 +76,62 @@ class PriceServiceIT {
     }
 
     @Test
+    void testFindPriceWrongParamFindPriceRequest() {
+
+        // Given
+        Long productId = 1L;
+        Long negativeProductId = -1L;
+        Long negativeBrandId = -1L;
+        Long brandId = 1L;
+        LocalDateTime date = LocalDateTime.of(2020, Month.APRIL,10,16,0,0);;
+
+        FindPriceRequest requestNegativeBrandId = new FindPriceRequest(date, negativeBrandId, productId);
+        FindPriceRequest requestNoDate = new FindPriceRequest(null, brandId, productId);
+        FindPriceRequest requestNegativeProductId = new FindPriceRequest(date, brandId, negativeProductId);
+        FindPriceRequest requestNoBrand = new FindPriceRequest(date, null, productId);
+        FindPriceRequest requestNoProduct = new FindPriceRequest(date, brandId, null);
+        FindPriceRequest requestMultipleInvalidFields = new FindPriceRequest(null, negativeBrandId, null);
+
+        // When && Then
+        assertThrows(ConstraintViolationException.class, () -> {
+            priceService.findPrice(requestNegativeBrandId);
+        });
+
+        assertThrows(ConstraintViolationException.class, () -> {
+            priceService.findPrice(requestNegativeProductId);
+        });
+
+        assertThrows(ConstraintViolationException.class, () -> {
+            priceService.findPrice(requestNoDate);
+        });
+
+        assertThrows(ConstraintViolationException.class, () -> {
+            priceService.findPrice(requestNoBrand);
+        });
+
+        assertThrows(ConstraintViolationException.class, () -> {
+            priceService.findPrice(requestNoProduct);
+        });
+
+        assertThrows(ConstraintViolationException.class, () -> {
+            priceService.findPrice(requestMultipleInvalidFields);
+        });
+
+
+    }
+
+    @Test
     void testFindPricePriceNotFoundExceptionIT() {
 
         // Given
         Long productId = 30L;
         Long brandId = 12L;
         LocalDateTime date = LocalDateTime.of(2020, Month.APRIL, 10, 16, 0, 0);
+        FindPriceRequest request = new FindPriceRequest(date, brandId, productId);
 
         // When && Then
         assertThrows(PriceNotFoundException.class, () -> {
-            priceService.findPrice(date, brandId, productId);
+            priceService.findPrice(request);
         });
     }
 }

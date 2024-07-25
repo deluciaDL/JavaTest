@@ -1,5 +1,8 @@
 package com.example.hexagonal.domain.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -113,6 +116,30 @@ public class Price {
 
     public void setCurrency(Currency currency) {
         this.currency = currency;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Price price = (Price) o;
+
+        return new EqualsBuilder().append(priority, price.priority).append(id, price.id).append(brandId, price.brandId)
+                .append(dateFrom, price.dateFrom).append(dateTo, price.dateTo).append(feeId, price.feeId)
+                .append(productId, price.productId).append(amount, price.amount).append(currency, price.currency)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(id).append(brandId).append(dateFrom).append(dateTo).append(feeId)
+                .append(productId).append(priority).append(amount).append(currency).toHashCode();
     }
 
     @Override
