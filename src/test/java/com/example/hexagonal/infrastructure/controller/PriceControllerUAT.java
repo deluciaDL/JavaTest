@@ -8,6 +8,7 @@ import com.example.hexagonal.domain.repository.PriceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ class PriceControllerUAT {
     private TestRestTemplate restTemplate;
 
     @Autowired
+    @Qualifier("jpa")
     private PriceRepository priceRepository;
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH.mm.ss");
@@ -42,7 +44,7 @@ class PriceControllerUAT {
         LocalDateTime dateFrom = LocalDateTime.of(2020, Month.APRIL,10,16,0,0).minusDays(1);
         LocalDateTime dateTo = LocalDateTime.of(2020, Month.APRIL,10,16,0,0).plusDays(1);
         Long feeId = 3L;
-        BigDecimal amount = BigDecimal.valueOf(10.50);
+        BigDecimal amount = new BigDecimal("10.50");
 
         Price price = new Price(brandId, dateFrom, dateTo, feeId, productId, 0, amount, Currency.EUR);
 
@@ -61,7 +63,7 @@ class PriceControllerUAT {
         LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.APRIL,10,16,0,0).minusDays(1);
         LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.APRIL,10,16,0,0).plusDays(1);
         Long expectedFeeId = 3L;
-        BigDecimal expectedAmount = BigDecimal.valueOf(10.50);
+        BigDecimal expectedAmount = new BigDecimal("10.50");
 
         // When
         ResponseEntity<PriceResponseTestEntity> responseEntity = restTemplate.getForEntity(

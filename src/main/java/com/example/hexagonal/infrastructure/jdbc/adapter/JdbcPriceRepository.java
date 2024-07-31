@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,11 +58,6 @@ public class JdbcPriceRepository implements PriceRepository {
                 new PricePreparedStatementSetter(jdbcPrice));
 
         LOG.debug("Price saved successfully: {}", price);
-    }
-
-    @Override
-    public List<Price> findAll() {
-        return Collections.emptyList();
     }
 
     @Override

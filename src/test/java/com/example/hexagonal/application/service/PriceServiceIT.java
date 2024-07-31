@@ -7,9 +7,11 @@ import com.example.hexagonal.application.exception.PriceNotFoundException;
 import com.example.hexagonal.domain.model.Currency;
 import com.example.hexagonal.domain.model.Price;
 import com.example.hexagonal.domain.repository.PriceRepository;
-import jakarta.validation.ConstraintViolationException;
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +31,9 @@ class PriceServiceIT {
     private PriceService priceService;
 
     @Autowired
+    @Qualifier("jpa")
     private PriceRepository priceRepository;
-
+    
     @BeforeEach
     void setUp() {
         // Clean the DB first

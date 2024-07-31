@@ -6,6 +6,7 @@ import com.example.hexagonal.domain.repository.PriceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PriceControllerIT {
 
     @Autowired
+    @Qualifier("jpa")
     private PriceRepository priceRepository;
 
     @Autowired
@@ -47,7 +49,7 @@ class PriceControllerIT {
         LocalDateTime dateFrom = LocalDateTime.of(2020, Month.JUNE,14,0,0,0);
         LocalDateTime dateTo = LocalDateTime.of(2020, Month.DECEMBER,31,23,59,59);
         Long feeId = 1L;
-        BigDecimal amount = BigDecimal.valueOf(35.50);
+        BigDecimal amount = new BigDecimal("35.50");;
 
         Price price1 = new Price(brandId, dateFrom, dateTo, feeId, productId, 0, amount, Currency.EUR);
 
@@ -56,7 +58,7 @@ class PriceControllerIT {
         dateFrom = LocalDateTime.of(2020, Month.JUNE,14,15,0,0);
         dateTo = LocalDateTime.of(2020, Month.JUNE,14,18,30,0);
         feeId = 2L;
-        amount = BigDecimal.valueOf(25.45);
+        amount = new BigDecimal("25.45");;
 
         Price price2 = new Price(brandId, dateFrom, dateTo, feeId, productId, 1, amount, Currency.EUR);
 
@@ -65,7 +67,7 @@ class PriceControllerIT {
         dateFrom = LocalDateTime.of(2020, Month.JUNE,15,0,0,0);
         dateTo = LocalDateTime.of(2020, Month.JUNE,15,11,0,0);
         feeId = 3L;
-        amount = BigDecimal.valueOf(30.50);
+        amount = new BigDecimal("30.50");;
 
         Price price3 = new Price(brandId, dateFrom, dateTo, feeId, productId, 1, amount, Currency.EUR);
 
@@ -74,7 +76,7 @@ class PriceControllerIT {
         dateFrom = LocalDateTime.of(2020, Month.JUNE,15,16,0,0);
         dateTo = LocalDateTime.of(2020, Month.DECEMBER,31,23,59,59);
         feeId = 4L;
-        amount = BigDecimal.valueOf(38.95);
+        amount = new BigDecimal("38.95");;
 
         Price price4 = new Price(brandId, dateFrom, dateTo, feeId, productId, 1, amount, Currency.EUR);
 
@@ -97,7 +99,7 @@ class PriceControllerIT {
         LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.JUNE,14,0,0,0);
         LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.DECEMBER,31,23,59,59);
         Long expectedFeeId = 1L;
-        BigDecimal expectedAmount = BigDecimal.valueOf(35.50);
+        BigDecimal expectedAmount = new BigDecimal("35.50");;
 
         // When && Then
         mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
@@ -123,7 +125,7 @@ class PriceControllerIT {
         LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.JUNE,14,15,0,0);
         LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.JUNE,14,18,30,0);
         Long expectedFeeId = 2L;
-        BigDecimal expectedAmount = BigDecimal.valueOf(25.45);
+        BigDecimal expectedAmount = new BigDecimal("25.45");;
 
         // When && Then
         mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
@@ -149,7 +151,7 @@ class PriceControllerIT {
         LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.JUNE,14,0,0,0);
         LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.DECEMBER,31,23,59,59);
         Long expectedFeeId = 1L;
-        BigDecimal expectedAmount = BigDecimal.valueOf(35.50);
+        BigDecimal expectedAmount = new BigDecimal("35.50");;
 
         // When && Then
         mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
@@ -175,7 +177,7 @@ class PriceControllerIT {
         LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.JUNE,15,0,0,0);
         LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.JUNE,15,11,0,0);
         Long expectedFeeId = 3L;
-        BigDecimal expectedAmount = BigDecimal.valueOf(30.50);
+        BigDecimal expectedAmount = new BigDecimal("30.50");;
 
         // When && Then
         mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())
@@ -201,7 +203,7 @@ class PriceControllerIT {
         LocalDateTime expectedDateFrom = LocalDateTime.of(2020, Month.JUNE,15,16,0,0);
         LocalDateTime expectedDateTo = LocalDateTime.of(2020, Month.DECEMBER,31,23,59,59);
         Long expectedFeeId = 4L;
-        BigDecimal expectedAmount = BigDecimal.valueOf(38.95);
+        BigDecimal expectedAmount = new BigDecimal("38.95");
 
         // When && Then
         mockMvc.perform(get("/prices").param("productId", productId.toString()).param("brandId", brandId.toString())

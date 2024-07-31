@@ -10,6 +10,7 @@ import com.example.hexagonal.domain.repository.PriceRepository;
 import jakarta.validation.ConstraintViolation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import jakarta.validation.Validator;
 
@@ -26,7 +27,7 @@ public class PriceService {
 
     private final PriceRepository priceRepository;
 
-    public PriceService(PriceRepository priceRepository, Validator validator) {
+    public PriceService(@Qualifier("jpa") PriceRepository priceRepository, Validator validator) {
         this.priceRepository = priceRepository;
         this.validator = validator;
     }

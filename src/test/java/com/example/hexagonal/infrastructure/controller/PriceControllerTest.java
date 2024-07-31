@@ -57,7 +57,7 @@ class PriceControllerTest {
         LocalDateTime dateFrom = LocalDateTime.now().minusDays(1);
         LocalDateTime dateTo = LocalDateTime.now().plusDays(1);
         Long feeId = 3L;
-        BigDecimal amount = BigDecimal.valueOf(50.25);
+        BigDecimal amount = new BigDecimal("50.25");;
 
         LocalDateTime dateParam = LocalDateTime.now();
 
