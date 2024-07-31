@@ -7,6 +7,7 @@ import com.example.hexagonal.application.mapper.PriceDtoMapper;
 import com.example.hexagonal.application.exception.PriceNotFoundException;
 import com.example.hexagonal.domain.model.Price;
 import com.example.hexagonal.domain.repository.PriceRepository;
+import io.micrometer.core.annotation.Timed;
 import jakarta.validation.ConstraintViolation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ public class PriceService {
         this.validator = validator;
     }
 
+    @Timed(value = "priceService.findPrice", description = "Execution time spent to find price")
     public PriceResponse findPrice(FindPriceRequest request) {
 
         Set<ConstraintViolation<FindPriceRequest>> violations = validator.validate(request);
