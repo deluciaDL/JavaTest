@@ -20,17 +20,19 @@ hexagonal/
 │ │   └── example/
 │ │   └── hexagonal/
 │ │   │ ├── application/
+│ │   │ │ ├── configuration/
+│ │   │ │ │ └── MetricsConfiguration.java
 │ │   │ │ ├── dto/
 │ │   │ │ │ ├── FindPriceRequest.java
-│ │   │ │ │ ├── PriceResponse.java
+│ │   │ │ │ └── PriceResponse.java
+│ │   │ │ ├── exception/
+│ │   │ │ │ ├── InvalidPriceRequestException.java
+│ │   │ │ │ └── PriceNotFoundException.java
 │ │   │ │ ├── mapper/
 │ │   │ │ │ └── PriceDtoMapper.java
 │ │   │ │ ├── service/
 │ │   │ │ │ └── PriceService.java
 │ │   │ ├── domain/
-│ │   │ │ ├── exception/
-│ │   │ │ │ ├── GlobalExceptionHandler.java
-│ │   │ │ │ └── PriceNotFoundException.java
 │ │   │ │ ├── model/
 │ │   │ │ │ ├── Brand.java
 │ │   │ │ │ ├── Currency.java
@@ -38,24 +40,31 @@ hexagonal/
 │ │   │ │ │ ├── Product.java
 │ │   │ │ │ └── Price.java
 │ │   │ │ ├── repository/
-│ │   │ │   ├── BrandRepository.java
-│ │   │ │   ├── ProductRepository.java
-│ │   │ │   ├── FeeRepository.java
 │ │   │ │   └── PriceRepository.java
 │ │   │ ├── infrastructure/
 │ │   │   ├── configuration/
 │ │   │   │ └── BeanConfiguration.java
 │ │   │   ├── controller/
+│ │   │   │ └── exception/
+│ │   │   │   └── GlobalExceptionHandler.java
 │ │   │   │ └── PriceController.java
 │ │   │   ├── jdbc/
+│ │   │   │ ├── entity/
+│ │   │   │ │ └── JdbcPrice.java
+│ │   │   │ ├── mapper/
+│ │   │   │ │ ├── JdbcPriceMapper.java
+│ │   │   │ │ ├── PricePreparedStatementSetter.java
+│ │   │   │ │ └── PriceRowMapper.java
+│ │   │   │ ├── adapter/
+│ │   │   │   └── JdbcPriceRepository.java
+│ │   │   └── jpa/
 │ │   │     ├── entity/
-│ │   │     │ └── JdbcPrice.java
+│ │   │     │ └── JpaPrice.java
 │ │   │     ├── mapper/
-│ │   │     │ ├── JdbcPriceMapper.java
-│ │   │     │ ├── PricePreparedStatementSetter.java
-│ │   │     │ └── PriceRowMapper.java
-│ │   │     ├── adapter/
-│ │   │       └── JdbcPriceRepository.java
+│ │   │     │ └── JpaPriceMapper.java
+│ │   │     └── adapter/
+│ │   │       ├── JpaPriceRepository.java
+│ │   │       └── JpaPriceRepositoryImpl.java
 │ │   └── resources/
 │ │     └── application.properties
 │ │     └── schema.sql
@@ -102,7 +111,7 @@ The application adheres to the SOLID principles:
 
 - `PriceService` handles business logic related to prices.
 - `PriceController` handles HTTP requests and responses.
-- `PriceRepository` interface (and implementations like `JdbcPriceRepository`) handle data persistence.
+- `PriceRepository` interface (and implementations like `JdbcPriceRepository` or `JpaPriceRepository`) handle data persistence.
 - `GlobalExceptionHandler` handles exception management across the application.
 
 Each class has a clearly defined responsibility, ensuring that changes in one aspect of the application (e.g., business logic, data persistence, request handling) do not affect other aspects.
@@ -124,7 +133,7 @@ This approach allows the application to be extended with new functionality witho
 
 **Application:**
 
-- The `PriceRepository` interface can have multiple implementations (e.g., `JdbcPriceRepository`), and these can be used interchangeably without altering the correct functioning of the application.
+- The `PriceRepository` interface can have multiple implementations (e.g., `JdbcPriceRepository`, `JpaPriceRepository`...), and these can be used interchangeably without altering the correct functioning of the application.
 - The design ensures that different implementations of an interface can be substituted without changing the behavior expected by the interface.
 
 #### Interface Segregation Principle (ISP)
@@ -156,7 +165,7 @@ By adhering to SOLID principles, the application design ensures the following be
 - **Maintainability:** Each class has a single responsibility, making it easier to understand, test, and maintain.
 - **Extensibility:** The application can be extended with new features without modifying existing code, reducing the risk of introducing bugs.
 - **Testability:** Clear separation of concerns and dependency injection make unit testing easier.
-- **Flexibility:** The use of interfaces and dependency injection allows for easy replacement of components (e.g., changing from JDBC to another persistence mechanism) without significant changes to the codebase.
+- **Flexibility:** The use of interfaces and dependency injection allows for easy replacement of components (e.g., changing from JPA to JDBC persistence mechanism) without significant changes to the codebase.
 - **Decoupling:** High-level business logic is decoupled from low-level data access logic, promoting a clean and modular architecture.
 
 The current project structure and codebase adhere to these principles, ensuring a robust, maintainable, and scalable application design.
@@ -179,13 +188,13 @@ The DTO (Data Transfer Object) pattern is used to transfer data between differen
 
 ### Layered Architecture
 
-- **Application Layer:** Contains services (`PriceService`), DTOs and its mappers.
-- **Domain Layer:** Contains domain models (`Price`), ports (`PriceRepository`) and exception handling (`GlobalExceptionHandler`).
-- **Infrastructure Layer:** Contains JDBC implementations, API controllers, mappers and entities.
+- **Application Layer:** Contains services (`PriceService`), business custom exceptions, metrics configuration, DTOs and its mappers.
+- **Domain Layer:** Contains domain models (`Price`) and ports (`PriceRepository`).
+- **Infrastructure Layer:** Contains JDBC/JPA implementations, API controllers, GlobalExceptionHandler, data persistence mappers and data persistence entities.
 
 ### DTOs and Mappers
 
-DTOs (`FindPriceRequest` and `PriceResponse`) have been created to transfer data between the application and external clients. Mappers (`PriceDtoMapper`) convert domain - persistence model. Furthermore, on infrastructure layer, a jdbc entity was created to interact with the DB and some necessary mappers were added along with this entity to keep on the same layer all the jdbc stuff.
+DTOs (`FindPriceRequest` and `PriceResponse`) have been created to transfer data between the application and external clients. Mappers (`PriceDtoMapper`) convert domain - persistence model. Furthermore, on infrastructure layer, a jdbc/jpa entity was created to interact with the DB and some necessary mappers were added along with this entity to keep on the same layer all the jdbc/jpa stuff.
 
 ### Entities
 
@@ -258,4 +267,38 @@ http://localhost:8080/swagger-ui/index.html
 
 ## Error Handling
 
-A global exception handler `(GlobalExceptionHandler)` manages application-wide exceptions and provides meaningful error messages to the clients.
+A global exception handler `(GlobalExceptionHandler)` manages application-wide exceptions, custom exceptions (`InvalidPriceRequestException` and `PriceNotFoundException`) and provides meaningful error messages to the clients.
+
+## Application Monitoring
+
+Jacoco has been added to monitor test coverage on the application. In order to use it, please execute the following commands:
+
+```bash
+mvn test
+mvn jacoco:report
+```
+
+Then you could open existing `index.html` under path:
+
+```bash
+*/target/site/jacoco/
+```
+
+## Metrics
+
+The application has been configured to use MicroMeter for metrics. The following endpoints are available after starting the application:
+
+*Displays the available endpoints*
+```bash
+http://localhost:8080/actuator
+```
+
+*Displays the application status*
+```bash
+http://localhost:8080/actuator/health
+```
+
+*Displays the metrics*
+```bash
+http://localhost:8080/actuator/prometheus
+```
