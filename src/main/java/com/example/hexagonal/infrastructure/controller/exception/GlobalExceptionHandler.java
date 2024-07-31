@@ -1,7 +1,7 @@
-package com.example.hexagonal.domain.exception;
+package com.example.hexagonal.infrastructure.controller.exception;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
+import com.example.hexagonal.application.exception.InvalidPriceRequestException;
+import com.example.hexagonal.application.exception.PriceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,6 +36,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    // Handling error when FindPriceRequest params are incorrect
+    @ExceptionHandler(InvalidPriceRequestException.class)
+    public ResponseEntity<Object> handleInvalidPriceRequestException(InvalidPriceRequestException ex) {
+        LOG.error("Invalid price request: ", ex);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put(BODY_MESSAGE_KEY, ex.getMessage());
+        body.put(BODY_TIMESTAMP_KEY, System.currentTimeMillis());
+        body.put(BODY_STATUS_KEY, HttpStatus.NOT_FOUND.value());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
     // Handling error when api param is not correct
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
@@ -45,24 +57,6 @@ public class GlobalExceptionHandler {
 
         Map<String, Object> body = new HashMap<>();
         body.put(BODY_MESSAGE_KEY, "Invalid parameter type: " + ex.getName());
-        body.put(BODY_TIMESTAMP_KEY, System.currentTimeMillis());
-        body.put(BODY_STATUS_KEY, HttpStatus.BAD_REQUEST.value());
-
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-    }
-
-    // Handling errors for constraints checks added
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
-
-        String errorMessage =
-                ex.getConstraintViolations().stream().map(ConstraintViolation::getMessage)
-                        .collect(Collectors.joining(", "));
-
-        LOG.error("ConstraintViolationException: ", ex);
-
-        Map<String, Object> body = new HashMap<>();
-        body.put(BODY_MESSAGE_KEY, errorMessage);
         body.put(BODY_TIMESTAMP_KEY, System.currentTimeMillis());
         body.put(BODY_STATUS_KEY, HttpStatus.BAD_REQUEST.value());
 

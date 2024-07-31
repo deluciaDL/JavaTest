@@ -2,7 +2,8 @@ package com.example.hexagonal.application.service;
 
 import com.example.hexagonal.application.dto.FindPriceRequest;
 import com.example.hexagonal.application.dto.PriceResponse;
-import com.example.hexagonal.domain.exception.PriceNotFoundException;
+import com.example.hexagonal.application.exception.InvalidPriceRequestException;
+import com.example.hexagonal.application.exception.PriceNotFoundException;
 import com.example.hexagonal.domain.model.Currency;
 import com.example.hexagonal.domain.model.Price;
 import com.example.hexagonal.domain.repository.PriceRepository;
@@ -93,27 +94,27 @@ class PriceServiceIT {
         FindPriceRequest requestMultipleInvalidFields = new FindPriceRequest(null, negativeBrandId, null);
 
         // When && Then
-        assertThrows(ConstraintViolationException.class, () -> {
+        assertThrows(InvalidPriceRequestException.class, () -> {
             priceService.findPrice(requestNegativeBrandId);
         });
 
-        assertThrows(ConstraintViolationException.class, () -> {
+        assertThrows(InvalidPriceRequestException.class, () -> {
             priceService.findPrice(requestNegativeProductId);
         });
 
-        assertThrows(ConstraintViolationException.class, () -> {
+        assertThrows(InvalidPriceRequestException.class, () -> {
             priceService.findPrice(requestNoDate);
         });
 
-        assertThrows(ConstraintViolationException.class, () -> {
+        assertThrows(InvalidPriceRequestException.class, () -> {
             priceService.findPrice(requestNoBrand);
         });
 
-        assertThrows(ConstraintViolationException.class, () -> {
+        assertThrows(InvalidPriceRequestException.class, () -> {
             priceService.findPrice(requestNoProduct);
         });
 
-        assertThrows(ConstraintViolationException.class, () -> {
+        assertThrows(InvalidPriceRequestException.class, () -> {
             priceService.findPrice(requestMultipleInvalidFields);
         });
 

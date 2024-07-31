@@ -2,12 +2,12 @@ package com.example.hexagonal.application.service;
 
 import com.example.hexagonal.application.dto.FindPriceRequest;
 import com.example.hexagonal.application.dto.PriceResponse;
+import com.example.hexagonal.application.exception.InvalidPriceRequestException;
 import com.example.hexagonal.application.mapper.PriceDtoMapper;
-import com.example.hexagonal.domain.exception.PriceNotFoundException;
+import com.example.hexagonal.application.exception.PriceNotFoundException;
 import com.example.hexagonal.domain.model.Price;
 import com.example.hexagonal.domain.repository.PriceRepository;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,7 @@ import jakarta.validation.Validator;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PriceService {
@@ -34,7 +35,10 @@ public class PriceService {
 
         Set<ConstraintViolation<FindPriceRequest>> violations = validator.validate(request);
         if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
+            String errorMessage = violations.stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.joining(", "));
+            throw new InvalidPriceRequestException(errorMessage);
         }
 
         LOG.info("Fetching price for productId: {}, brandId: {}, date: {}", request.getProductId(),

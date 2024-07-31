@@ -1,4 +1,4 @@
-package com.example.hexagonal.domain.exception;
+package com.example.hexagonal.application.exception;
 
 public class PriceNotFoundException extends RuntimeException {
 

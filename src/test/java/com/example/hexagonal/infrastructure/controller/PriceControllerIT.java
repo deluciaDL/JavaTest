@@ -249,6 +249,4 @@ class PriceControllerIT {
                 .andExpect(jsonPath("$.timestamp").exists())
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()));
     }
-
-
 }
